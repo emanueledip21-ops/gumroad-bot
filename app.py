@@ -128,6 +128,8 @@ def webhook():
         send_email(buyer_name, buyer_email, pdf_bytes)
         return jsonify({"status": "ok", "buyer": buyer_email}), 200
     except Exception as e:
+        import traceback
+        print(traceback.format_exc())
         return jsonify({"error": str(e)}), 500
 
 
