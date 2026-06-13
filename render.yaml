@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: gumroad-bot
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: GMAIL_APP_PASS
+        sync: false
+      - key: OWNER_PASSWORD
+        sync: false
