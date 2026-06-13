@@ -1,5 +1,5 @@
 """
-Server Flask — Gumroad Webhook
+Server Flask — Payhip Webhook
 Riceve i dati dell'acquirente, genera il PDF personalizzato e lo invia via email.
 """
 
@@ -19,7 +19,7 @@ from reportlab.lib import colors
 
 # ── Configurazione ────────────────────────────────────────────────────────────
 GMAIL_ADDRESS   = "emanueledip21@gmail.com"
-GMAIL_APP_PASS  = os.environ.get("GMAIL_APP_PASS", "")          # da variabile ambiente
+GMAIL_APP_PASS  = os.environ.get("GMAIL_APP_PASS", "")
 OWNER_PASSWORD  = os.environ.get("OWNER_PASSWORD", "OWNER_SECRET_2026")
 PDF_MASTER_PATH = "guadagna_di_piu_come_creator_contenuti_per_adulti.pdf"
 
@@ -32,7 +32,6 @@ def create_watermark_page(buyer_name: str, buyer_email: str) -> io.BytesIO:
     buf = io.BytesIO()
     c = rl_canvas.Canvas(buf, pagesize=A4)
 
-    # Watermark diagonale
     c.saveState()
     c.setFillColor(colors.HexColor("#C0392B"), alpha=0.07)
     c.setFont("Helvetica-Bold", 28)
@@ -43,7 +42,6 @@ def create_watermark_page(buyer_name: str, buyer_email: str) -> io.BytesIO:
     c.drawCentredString(0, -36, buyer_email)
     c.restoreState()
 
-    # Banda inferiore
     c.saveState()
     c.setFillColor(colors.HexColor("#1A1A1A"), alpha=0.55)
     c.rect(0, 0, PAGE_W, 0.85 * 28.35, fill=1, stroke=0)
@@ -117,10 +115,10 @@ Buona lettura!
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
-    data = request.form
+    data = request.get_json(silent=True) or request.form
 
-    buyer_name  = data.get("full_name") or data.get("email", "Cliente")
-    buyer_email = data.get("email", "")
+    buyer_name  = data.get("customer_name") or data.get("email", "Cliente")
+    buyer_email = data.get("customer_email") or data.get("email", "")
 
     if not buyer_email:
         return jsonify({"error": "email mancante"}), 400
@@ -135,7 +133,7 @@ def webhook():
 
 @app.route("/", methods=["GET"])
 def index():
-    return "Gumroad Bot attivo ✅", 200
+    return "Payhip Bot attivo ✅", 200
 
 
 if __name__ == "__main__":
