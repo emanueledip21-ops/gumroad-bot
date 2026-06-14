@@ -106,7 +106,7 @@ Buona lettura!
     )
     msg.attach(attachment)
 
-  with smtplib.SMTP("smtp.gmail.com", 587) as server:
+    with smtplib.SMTP("smtp.gmail.com", 587) as server:  # ← indentazione corretta (4 spazi)
         server.starttls()
         server.login(GMAIL_ADDRESS, GMAIL_APP_PASS)
         server.sendmail(GMAIL_ADDRESS, buyer_email, msg.as_string())
